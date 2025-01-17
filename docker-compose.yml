@@ -1,13 +1,13 @@
 services:
-  postgres-notes:
+  postgres-reminders:
     image: postgres:16-alpine
     ports:
       - 1801:5432
     volumes:
-      - uservice_notes_postgres:/var/lib/postgresql/data
+      - uservice_reminders_postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
 volumes:
-  uservice_notes_postgres:
+  uservice_reminders_postgres:
