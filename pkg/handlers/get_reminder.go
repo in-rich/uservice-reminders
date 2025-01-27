@@ -42,6 +42,7 @@ func (h *GetReminderHandler) getReminder(ctx context.Context, in *reminders_pb.G
 		Content:          reminder.Content,
 		UpdatedAt:        TimeToTimestampProto(reminder.UpdatedAt),
 		ExpiredAt:        TimeToTimestampProto(reminder.ExpiredAt),
+		ReminderId:       reminder.ID,
 	}, nil
 }
 
