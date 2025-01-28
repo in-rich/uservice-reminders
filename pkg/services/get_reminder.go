@@ -29,6 +29,7 @@ func (s *getReminderServiceImpl) Exec(ctx context.Context, selector *models.GetR
 	}
 
 	return &models.Reminder{
+		ID:               reminder.ID.String(),
 		PublicIdentifier: reminder.PublicIdentifier,
 		AuthorID:         reminder.AuthorID,
 		Target:           string(reminder.Target),

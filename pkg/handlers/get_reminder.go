@@ -36,6 +36,7 @@ func (h *GetReminderHandler) getReminder(ctx context.Context, in *reminders_pb.G
 	}
 
 	return &reminders_pb.Reminder{
+		ReminderId:       reminder.ID,
 		PublicIdentifier: reminder.PublicIdentifier,
 		AuthorId:         reminder.AuthorID,
 		Target:           reminder.Target,

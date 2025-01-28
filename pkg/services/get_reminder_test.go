@@ -2,6 +2,7 @@ package services_test
 
 import (
 	"context"
+	"github.com/google/uuid"
 	daomocks "github.com/in-rich/uservice-reminders/pkg/dao/mocks"
 	"github.com/in-rich/uservice-reminders/pkg/entities"
 	"github.com/in-rich/uservice-reminders/pkg/models"
@@ -34,6 +35,7 @@ func TestGetReminderService(t *testing.T) {
 			},
 			shouldCallGetReminder: true,
 			getReminderResponse: &entities.Reminder{
+				ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 				PublicIdentifier: "public-identifier",
 				AuthorID:         "author-id",
 				Target:           entities.Target("target"),
@@ -42,6 +44,7 @@ func TestGetReminderService(t *testing.T) {
 				ExpiredAt:        lo.ToPtr(time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC)),
 			},
 			expect: &models.Reminder{
+				ID:               "00000000-0000-0000-0000-000000000001",
 				PublicIdentifier: "public-identifier",
 				AuthorID:         "author-id",
 				Target:           "target",
