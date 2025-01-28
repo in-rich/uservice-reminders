@@ -23,8 +23,9 @@ func TestUpsertReminder(t *testing.T) {
 
 		in *reminders_pb.UpsertReminderRequest
 
-		upsertResponse *models.Reminder
-		upsertErr      error
+		upsertResponse   *models.Reminder
+		upsertIDResponse string
+		upsertErr        error
 
 		expect     *reminders_pb.UpsertReminderResponse
 		expectCode codes.Code
@@ -47,7 +48,9 @@ func TestUpsertReminder(t *testing.T) {
 				UpdatedAt:        lo.ToPtr(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 				ExpiredAt:        lo.ToPtr(time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
 			},
+			upsertIDResponse: "reminder-id",
 			expect: &reminders_pb.UpsertReminderResponse{
+				Id: "reminder-id",
 				Reminder: &reminders_pb.Reminder{
 					ReminderId:       "reminder-id",
 					PublicIdentifier: "public-identifier-1",
@@ -60,7 +63,7 @@ func TestUpsertReminder(t *testing.T) {
 			},
 		},
 		{
-			name: "DeleteUser",
+			name: "DeleteReminder",
 			in: &reminders_pb.UpsertReminderRequest{
 				Target:           "company",
 				PublicIdentifier: "public-identifier-1",
@@ -68,13 +71,9 @@ func TestUpsertReminder(t *testing.T) {
 				Content:          "content-1",
 				ExpiredAt:        timestamppb.New(time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
 			},
-			upsertResponse: &models.Reminder{
-				ID: "reminder-id",
-			},
+			upsertIDResponse: "reminder-id",
 			expect: &reminders_pb.UpsertReminderResponse{
-				Reminder: &reminders_pb.Reminder{
-					ReminderId: "reminder-id",
-				},
+				Id: "reminder-id",
 			},
 		},
 		{
@@ -112,7 +111,7 @@ func TestUpsertReminder(t *testing.T) {
 				AuthorID:         tt.in.GetAuthorId(),
 				Content:          tt.in.GetContent(),
 				ExpiredAt:        lo.ToPtr(tt.in.GetExpiredAt().AsTime()),
-			}).Return(tt.upsertResponse, tt.upsertErr)
+			}).Return(tt.upsertResponse, tt.upsertIDResponse, tt.upsertErr)
 
 			handler := handlers.NewUpsertReminderHandler(service, monitor.NewDummyGRPCLogger())
 

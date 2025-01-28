@@ -10,7 +10,7 @@ import (
 )
 
 type UpsertReminderService interface {
-	Exec(ctx context.Context, reminder *models.UpsertReminder) (*models.Reminder, error)
+	Exec(ctx context.Context, reminder *models.UpsertReminder) (*models.Reminder, string, error)
 }
 
 type upsertReminderServiceImpl struct {
@@ -19,21 +19,19 @@ type upsertReminderServiceImpl struct {
 	deleteReminderRepository dao.DeleteReminderRepository
 }
 
-func (s *upsertReminderServiceImpl) Exec(ctx context.Context, reminder *models.UpsertReminder) (*models.Reminder, error) {
+func (s *upsertReminderServiceImpl) Exec(ctx context.Context, reminder *models.UpsertReminder) (*models.Reminder, string, error) {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	if err := validate.Struct(reminder); err != nil {
-		return nil, errors.Join(ErrInvalidReminderUpdate, err)
+		return nil, "", errors.Join(ErrInvalidReminderUpdate, err)
 	}
 
 	// Delete reminder if content is empty.
 	if reminder.Content == "" {
 		deletedReminder, err := s.deleteReminderRepository.DeleteReminder(ctx, reminder.AuthorID, entities.Target(reminder.Target), reminder.PublicIdentifier)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
-		return &models.Reminder{
-			ID: deletedReminder.ID.String(),
-		}, nil
+		return nil, deletedReminder.ID.String(), nil
 	}
 
 	// Attempt to create a reminder.
@@ -58,11 +56,11 @@ func (s *upsertReminderServiceImpl) Exec(ctx context.Context, reminder *models.U
 			Content:          createdReminder.Content,
 			UpdatedAt:        createdReminder.UpdatedAt,
 			ExpiredAt:        createdReminder.ExpiredAt,
-		}, nil
+		}, createdReminder.ID.String(), nil
 	}
 
 	if !errors.Is(err, dao.ErrReminderAlreadyExists) {
-		return nil, err
+		return nil, "", err
 	}
 
 	// Reminder already exists. Update it.
@@ -78,7 +76,7 @@ func (s *upsertReminderServiceImpl) Exec(ctx context.Context, reminder *models.U
 	)
 
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	return &models.Reminder{
@@ -89,7 +87,7 @@ func (s *upsertReminderServiceImpl) Exec(ctx context.Context, reminder *models.U
 		Content:          updatedReminder.Content,
 		UpdatedAt:        updatedReminder.UpdatedAt,
 		ExpiredAt:        updatedReminder.ExpiredAt,
-	}, nil
+	}, updatedReminder.ID.String(), nil
 }
 
 func NewUpsertReminderService(

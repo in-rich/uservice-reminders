@@ -19,7 +19,7 @@ type UpsertReminderHandler struct {
 }
 
 func (h *UpsertReminderHandler) upsertReminder(ctx context.Context, in *reminders_pb.UpsertReminderRequest) (*reminders_pb.UpsertReminderResponse, error) {
-	reminder, err := h.service.Exec(ctx, &models.UpsertReminder{
+	reminder, reminderID, err := h.service.Exec(ctx, &models.UpsertReminder{
 		Target:           in.GetTarget(),
 		PublicIdentifier: in.GetPublicIdentifier(),
 		AuthorID:         in.GetAuthorId(),
@@ -38,10 +38,11 @@ func (h *UpsertReminderHandler) upsertReminder(ctx context.Context, in *reminder
 	}
 
 	if reminder == nil {
-		return &reminders_pb.UpsertReminderResponse{}, nil
+		return &reminders_pb.UpsertReminderResponse{Id: reminderID}, nil
 	}
 
 	return &reminders_pb.UpsertReminderResponse{
+		Id: reminderID,
 		Reminder: &reminders_pb.Reminder{
 			ReminderId:       reminder.ID,
 			Target:           reminder.Target,

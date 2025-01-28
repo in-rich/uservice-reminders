@@ -37,6 +37,7 @@ func TestUpsertReminder(t *testing.T) {
 		updateReminderError      error
 
 		expect    *models.Reminder
+		expectID  string
 		expectErr error
 	}{
 		{
@@ -69,6 +70,7 @@ func TestUpsertReminder(t *testing.T) {
 				UpdatedAt:        lo.ToPtr(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 				ExpiredAt:        lo.ToPtr(time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC)),
 			},
+			expectID: "00000000-0000-0000-0000-000000000001",
 		},
 		{
 			name: "CreateReminder",
@@ -98,6 +100,7 @@ func TestUpsertReminder(t *testing.T) {
 				UpdatedAt:        lo.ToPtr(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 				ExpiredAt:        lo.ToPtr(time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC)),
 			},
+			expectID: "00000000-0000-0000-0000-000000000001",
 		},
 		{
 			name: "DeleteReminder",
@@ -112,9 +115,7 @@ func TestUpsertReminder(t *testing.T) {
 			deleteReminderResponse: &entities.Reminder{
 				ID: lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 			},
-			expect: &models.Reminder{
-				ID: "00000000-0000-0000-0000-000000000001",
-			},
+			expectID: "00000000-0000-0000-0000-000000000001",
 		},
 		{
 			name: "UpdateReminderError",
@@ -190,10 +191,7 @@ func TestUpsertReminder(t *testing.T) {
 						tt.reminder.AuthorID,
 						entities.Target(tt.reminder.Target),
 						tt.reminder.PublicIdentifier,
-						&dao.CreateReminderData{
-							Content:   tt.reminder.Content,
-							ExpiredAt: tt.reminder.ExpiredAt,
-						},
+						&dao.CreateReminderData{Content: tt.reminder.Content, ExpiredAt: tt.reminder.ExpiredAt},
 					).
 					Return(tt.createReminderResponse, tt.createReminderError)
 			}
@@ -206,20 +204,18 @@ func TestUpsertReminder(t *testing.T) {
 						tt.reminder.AuthorID,
 						entities.Target(tt.reminder.Target),
 						tt.reminder.PublicIdentifier,
-						&dao.UpdateReminderData{
-							Content:   tt.reminder.Content,
-							ExpiredAt: tt.reminder.ExpiredAt,
-						},
+						&dao.UpdateReminderData{Content: tt.reminder.Content, ExpiredAt: tt.reminder.ExpiredAt},
 					).
 					Return(tt.updateReminderResponse, tt.updateReminderError)
 			}
 
 			service := services.NewUpsertReminderService(updateReminder, createReminder, deleteReminder)
 
-			reminder, err := service.Exec(context.TODO(), tt.reminder)
+			reminder, reminderID, err := service.Exec(context.TODO(), tt.reminder)
 
 			require.ErrorIs(t, err, tt.expectErr)
 			require.Equal(t, tt.expect, reminder)
+			require.Equal(t, tt.expectID, reminderID)
 
 			deleteReminder.AssertExpectations(t)
 			createReminder.AssertExpectations(t)

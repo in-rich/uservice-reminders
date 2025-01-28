@@ -23,7 +23,7 @@ func (_m *MockUpsertReminderService) EXPECT() *MockUpsertReminderService_Expecte
 }
 
 // Exec provides a mock function with given fields: ctx, reminder
-func (_m *MockUpsertReminderService) Exec(ctx context.Context, reminder *models.UpsertReminder) (*models.Reminder, error) {
+func (_m *MockUpsertReminderService) Exec(ctx context.Context, reminder *models.UpsertReminder) (*models.Reminder, string, error) {
 	ret := _m.Called(ctx, reminder)
 
 	if len(ret) == 0 {
@@ -31,8 +31,9 @@ func (_m *MockUpsertReminderService) Exec(ctx context.Context, reminder *models.
 	}
 
 	var r0 *models.Reminder
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *models.UpsertReminder) (*models.Reminder, error)); ok {
+	var r1 string
+	var r2 error
+	if rf, ok := ret.Get(0).(func(context.Context, *models.UpsertReminder) (*models.Reminder, string, error)); ok {
 		return rf(ctx, reminder)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, *models.UpsertReminder) *models.Reminder); ok {
@@ -43,13 +44,19 @@ func (_m *MockUpsertReminderService) Exec(ctx context.Context, reminder *models.
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *models.UpsertReminder) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *models.UpsertReminder) string); ok {
 		r1 = rf(ctx, reminder)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(string)
 	}
 
-	return r0, r1
+	if rf, ok := ret.Get(2).(func(context.Context, *models.UpsertReminder) error); ok {
+		r2 = rf(ctx, reminder)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // MockUpsertReminderService_Exec_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Exec'
@@ -71,12 +78,12 @@ func (_c *MockUpsertReminderService_Exec_Call) Run(run func(ctx context.Context,
 	return _c
 }
 
-func (_c *MockUpsertReminderService_Exec_Call) Return(_a0 *models.Reminder, _a1 error) *MockUpsertReminderService_Exec_Call {
-	_c.Call.Return(_a0, _a1)
+func (_c *MockUpsertReminderService_Exec_Call) Return(_a0 *models.Reminder, _a1 string, _a2 error) *MockUpsertReminderService_Exec_Call {
+	_c.Call.Return(_a0, _a1, _a2)
 	return _c
 }
 
-func (_c *MockUpsertReminderService_Exec_Call) RunAndReturn(run func(context.Context, *models.UpsertReminder) (*models.Reminder, error)) *MockUpsertReminderService_Exec_Call {
+func (_c *MockUpsertReminderService_Exec_Call) RunAndReturn(run func(context.Context, *models.UpsertReminder) (*models.Reminder, string, error)) *MockUpsertReminderService_Exec_Call {
 	_c.Call.Return(run)
 	return _c
 }
