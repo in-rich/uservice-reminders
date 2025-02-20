@@ -1,15 +1,15 @@
 packages:
-#  github.com/in-rich/uservice-reminders/pkg/dao:
-#    config:
-#      all: True
-#      recursive: true
-#      with-expecter: true
-#      outpkg: daomocks
-#      dir: pkg/dao/mocks
-#  github.com/in-rich/uservice-reminders/pkg/services:
-#    config:
-#      all: True
-#      recursive: true
-#      with-expecter: true
-#      outpkg: servicesmocks
-#      dir: pkg/services/mocks
+  github.com/in-rich/uservice-reminders/pkg/dao:
+    config:
+      all: True
+      recursive: true
+      with-expecter: true
+      outpkg: daomocks
+      dir: pkg/dao/mocks
+  github.com/in-rich/uservice-reminders/pkg/services:
+    config:
+      all: True
+      recursive: true
+      with-expecter: true
+      outpkg: servicesmocks
+      dir: pkg/services/mocks
